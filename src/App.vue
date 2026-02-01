@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onUnmounted } from "vue";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-json";
 import { getDocument, setDocument } from "./utils/persistance";
 
 const indent_level = ref(2);
-function format(val: string) {
+function format(val: string, highlight: boolean = true) {
   const formatted = JSON.stringify(JSON.parse(val), null, indent_level.value);
-  return Prism.highlight(formatted, Prism.languages.json, "json");
+  if (highlight)
+    return Prism.highlight(formatted, Prism.languages.json, "json");
+  return formatted;
 }
 
 const src = ref(getDocument());
@@ -32,13 +34,51 @@ watch(src, (val) => {
 });
 
 watch(indent_level, (val) => {
-  setDocument(src.value);
   error.value = "";
   try {
     dst.value = format(src.value);
   } catch (err: any) {
     error.value = err.message || "unknown error";
   }
+});
+function saveText() {
+  try {
+    const blob = new Blob([format(src.value, false)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "document.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (err: any) {
+    error.value = err.message || "unknown error";
+  }
+}
+
+function isEditorFocused(): boolean {
+  return document.activeElement?.tagName === "TEXTAREA";
+}
+
+function handleKeydown(e: KeyboardEvent) {
+  if (!isEditorFocused()) return;
+
+  if ((e.ctrlKey || e.metaKey) && e.key == "s") {
+    e.preventDefault();
+    saveText();
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("keydown", handleKeydown);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleKeydown);
 });
 </script>
 
