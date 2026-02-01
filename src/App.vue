@@ -3,22 +3,41 @@ import { ref, watch } from "vue";
 import Prism from "prismjs";
 import "prismjs/themes/prism-tomorrow.css";
 import "prismjs/components/prism-json";
-const src = ref("");
-const dst = ref("");
-const error = ref("");
+import { getDocument, setDocument } from "./utils/persistance";
 
-async function waitError() {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  error.value = false;
+const indent_level = ref(2);
+function format(val: string) {
+  const formatted = JSON.stringify(JSON.parse(val), null, indent_level.value);
+  return Prism.highlight(formatted, Prism.languages.json, "json");
 }
 
-watch(src, async (val) => {
+const src = ref(getDocument());
+const error = ref("");
+const dst = ref("");
+
+try {
+  dst.value = format(getDocument());
+} catch (err) {
+  error.value = err.message || "unknown error";
+}
+
+watch(src, (val) => {
+  setDocument(val);
+  error.value = "";
   try {
-    const formatted = JSON.stringify(JSON.parse(val), null, 4);
-    dst.value = Prism.highlight(formatted, Prism.languages.json, "json");
+    dst.value = format(val);
   } catch (err: any) {
     error.value = err.message || "unknown error";
-    await waitError();
+  }
+});
+
+watch(indent_level, (val) => {
+  setDocument(src.value);
+  error.value = "";
+  try {
+    dst.value = format(src.value);
+  } catch (err: any) {
+    error.value = err.message || "unknown error";
   }
 });
 </script>
@@ -37,10 +56,20 @@ watch(src, async (val) => {
           <i>Minimalistic JSON Formatter / Validator</i>
         </span>
       </h1>
-
-      <span class="text-red-700 dark:text-red-300" v-if="error">{{
-        error
-      }}</span>
+      <div>
+        <span class="text-red-700 dark:text-red-300 me-1" v-if="error">{{
+          error
+        }}</span>
+        <select
+          v-model.number="indent_level"
+          class="border rounded-md border-neutral-200 dark:border-neutral-800 p-1"
+          title="Indent Level"
+        >
+          <option :value="2">2</option>
+          <option :value="4">4</option>
+          <option :value="8">8</option>
+        </select>
+      </div>
     </div>
     <div class="flex flex-1 gap-2 p-2 min-h-96">
       <textarea
