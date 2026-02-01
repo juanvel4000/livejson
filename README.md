@@ -2,6 +2,8 @@
 
 A  minimalistic JSON **formatter and validator**
 
+![LiveJSON Screenshot](./assets/screenshot.png)
+
 ## Features
 
 - **Live validation**, as you type

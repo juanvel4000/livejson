@@ -1,7 +1,7 @@
 {
   "name": "livejson",
   "version": "0.0.0",
-  "private": true,
+  "description": "Minimalistic JSON formatter and validator",
   "type": "module",
   "scripts": {
     "dev": "vite",
