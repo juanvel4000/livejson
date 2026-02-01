@@ -3,5 +3,5 @@ export function setDocument(document: string) {
 }
 
 export function getDocument() {
-  return localStorage.getItem("livejson.document") ?? "";
+  return localStorage.getItem("livejson.document") ?? "{}";
 }

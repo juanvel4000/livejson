@@ -13,7 +13,7 @@ function format(val: string, highlight: boolean = true) {
   return formatted;
 }
 
-const src = ref(getDocument());
+const src = ref(getDocument() || "{}");
 const error = ref("");
 const dst = ref("");
 
@@ -102,7 +102,7 @@ onUnmounted(() => {
         }}</span>
         <select
           v-model.number="indent_level"
-          class="border rounded-md border-neutral-200 dark:border-neutral-800 p-1"
+          class="border rounded-md border-neutral-200 dark:border-neutral-800 p-1 hover:shadow-md"
           title="Indent Level"
         >
           <option :value="2">2</option>
@@ -117,7 +117,7 @@ onUnmounted(() => {
         class="p-2 border border-neutral-200 dark:border-neutral-800 rounded-md flex-1 resize-none"
       ></textarea>
       <pre
-        class="p-2 border rounded-md border-neutral-200 dark:border-neutral-800 flex-1 overflow-auto prose dark:prose-invert"
+        class="p-2 border rounded-md dark:border-neutral-800 bg-neutral-900 flex-1 overflow-auto prose dark:prose-invert"
         v-html="dst"
       ></pre>
     </div>
