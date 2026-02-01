@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-
+import Prism from "prismjs";
+import "prismjs/themes/prism-tomorrow.css";
+import "prismjs/components/prism-json";
 const src = ref("");
 const dst = ref("");
 const error = ref("");
@@ -12,7 +14,8 @@ async function waitError() {
 
 watch(src, async (val) => {
   try {
-    dst.value = JSON.stringify(JSON.parse(val), null, 2);
+    const formatted = JSON.stringify(JSON.parse(val), null, 4);
+    dst.value = Prism.highlight(formatted, Prism.languages.json, "json");
   } catch (err: any) {
     error.value = err.message || "unknown error";
     await waitError();
