@@ -13,7 +13,7 @@ A  minimalistic JSON **formatter and validator**
 
 ## Demo
 
-Try it live on [livejson.juanvel400.xyz](https://livejson.juanvel400.xyz)
+Try it live on [livejson.juanvel400.com](https://livejson.juanvel400.com)
 
 ## Quickstart
 
